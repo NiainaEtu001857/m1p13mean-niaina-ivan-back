@@ -1,6 +1,6 @@
 const mogoose = require("mongoose");
 
-const userShema = new mogoose.Schema({
+const userSchema = new mogoose.Schema({
     email: {
         type: String,
         require: true,
