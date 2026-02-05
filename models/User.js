@@ -15,6 +15,6 @@ const userShema = new mogoose.Schema({
         enum: ["ADMIN", "SHOP", "CLIENT"],
         default: "CLIENT"
     }
-}, { timestamps: true });
+}, { Timestamps: true });
 
 module.exports = mogoose.model("User", userSchema);
