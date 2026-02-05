@@ -1,5 +1,6 @@
 const User = require ("../models/User");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
     const { email, password, role } = req.body;
@@ -15,5 +16,11 @@ exports.register = async (req, res) => {
         password: hashedPass,
         role
     });
-    res.status(201).json({ id: user._id});
+
+    const token = jwt.sing(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIN: "id" }
+    );
+    res.status(201).json({ token });
 };
