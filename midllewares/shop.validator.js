@@ -6,7 +6,7 @@ module.exports.register = ( req, res, next) => {
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email))
-        return res.start(400).json({ meassage: "Invalid email format"});
+        return res.status(400).json({ meassage: "Invalid email format"});
 
     next();
 };
