@@ -1,16 +1,17 @@
-var createError = require('http-errors');
+const createError = require('http-errors');
 require("dotenv").config();
 require("./config/db")();
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var authRouter = require('./routes/auth.routes');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth.routes');
+const shopRouter = require('./routes/shop.routes')
 
-var app = express();
+const app = express();
 const favicon = require('serve-favicon')
 
 // view engine setup
@@ -27,6 +28,7 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/shop', shopRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
