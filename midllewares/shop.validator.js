@@ -28,4 +28,4 @@ module.exports.vService = (req, res, next) =>
         return res.status(400).json({ error: "Min quantity must be a positive number" });
     }
     next();
-}
+};

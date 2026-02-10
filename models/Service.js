@@ -7,7 +7,7 @@ const serviceShema = new mongoose.Schema({
        }, 
        price_u:
        {
-            type: number,
+            type: Number,
             require: true,
             min: 0
        },
@@ -28,7 +28,7 @@ const serviceShema = new mongoose.Schema({
        }, 
        min_quantity:
        {    
-         type: number,
+         type: Number,
          require: true,
          min: 0
        },
