@@ -1,10 +1,15 @@
 const mongoose = require('mongoose')
+const autoSequence = require('./Sequence')
 
 const serviceShema = new mongoose.Schema({
        name:{
             type: String,
             require: true
        }, 
+       ref:{
+          type: String,
+          unique: true
+       },
        price_u:
        {
             type: Number,
@@ -38,5 +43,7 @@ const serviceShema = new mongoose.Schema({
        }
     }    
 );
+
+autoSequence(serviceShema, 'ref', 'SR-', 'serviceSeq');
 
 module.exports = mongoose.model('Service', serviceShema);
