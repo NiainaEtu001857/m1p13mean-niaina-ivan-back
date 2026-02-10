@@ -1,0 +1,43 @@
+
+1) POST /shop/create
+
+parametes:
+- name (string, required)
+- type (string, required)
+- description (string, required)
+- email (string, required, valid email format)
+- password (string, required)
+
+
+Validation:
+- Missing fields -> 400 { "message": "Missing fields" }
+- Invalid email format -> 400 { "message": "Invalid email format" }
+
+Behavior:
+- Rejects if email already exists -> 400 { "message": "Email already exists" }
+- Creates shop and returns JWT
+
+Response:
+- 201 { "token": "<jwt>" }
+
+2) POST /shop/service/add
+
+parameters:
+- name (string, required)
+- price_u (number, required, >= 0)
+- brand (string, required)
+- type (string, required)
+- shop (string, required)
+- min_quantity (number, required, >= 0)
+- base_unity (string, required by validator)
+Validation:
+
+- Missing fields -> 400 { "error": "Required fields cannot be empty" }
+- price_u invalid -> 400 { "error": "Price must be a positive number" }
+- min_quantity invalid -> 400 { "error": "Min quantity must be a positive number" }
+
+Response:
+- 201 { "message": "Service created successfully", "service": { ...created document... } }
+- 500 { "error": "Server error" }
+
+
