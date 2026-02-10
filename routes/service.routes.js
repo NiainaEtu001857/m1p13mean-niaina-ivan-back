@@ -1,11 +1,13 @@
 const router = require("express").Router();
 const inputValidator = require("../midllewares/shop.validator");
-const service = require("../controllers/service.controllers");
+const controllers = require("../controllers/service.controllers");
 
 
 
 
-router.post("/add", inputValidator.vService, service.addService);
+router.get("/services",controllers.getServices)
+router.post("/add", inputValidator.vService, controllers.addService);
+
 
 module.exports = router;
 

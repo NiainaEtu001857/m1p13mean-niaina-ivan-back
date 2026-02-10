@@ -26,3 +26,17 @@ exports.addService = async (req, res) =>
     }
 }
 
+
+exports.getServices = async (req, res) =>
+{
+    try{
+        const services = await Service.find().select(' _id name').sort({name: 1});
+
+        res.status(200).json(services);
+
+    }catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ error: 'Server error'});
+    }
+}
