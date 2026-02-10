@@ -27,7 +27,7 @@ exports.addService = async (req, res) =>
 
 exports.register = async (req, res) => {
 
-
+    try{
     const { name, type, description, email, password } = req.body;
 
 
@@ -52,7 +52,12 @@ exports.register = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
     );
-    res.status(201).json({ token });
+    res.status(201).json({ token, message: "User registered successfully" });
+    } catch (err)
+    {
+        res.status(500).json({ error: "Server error"})
+    }
+
 };
 
 
