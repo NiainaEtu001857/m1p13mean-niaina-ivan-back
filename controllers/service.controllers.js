@@ -1,6 +1,34 @@
 const Service = require ("../models/Service");
+const Stock = require('../models/Stock');
 
 
+exports.addStock = async (req, res) => {
+    try {
+        const { service, quantity, sale_price, purchase_price } = req.body;
+
+        const { Types } = require('mongoose');
+        if (!Types.ObjectId.isValid(service)) {
+            return res.status(400).json({ error: "Invalid service id" });
+        }
+
+        const existingService = await Service.findById(service);
+        if (!existingService) {
+            return res.status(400).json({ error: "Service not found" });
+        }
+
+        const stock = await Stock.create({
+            service,
+            quantity,
+            sale_price,
+            purchase_price
+        });
+
+        res.status(201).json({ message: "Stock added successfully", stock });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+};
 
 exports.addService = async (req, res) =>
 {
@@ -32,7 +60,7 @@ exports.getServices = async (req, res) =>
     try{
         const services = await Service.find().select(' _id name').sort({name: 1});
 
-        res.status(200).json(services);
+        res.status(200).json(services)
 
     }catch (err)
     {

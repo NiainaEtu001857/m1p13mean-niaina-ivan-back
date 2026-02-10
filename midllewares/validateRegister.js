@@ -9,4 +9,5 @@ module.exports = ( req, res, next) => {
         return res.status(400).json({ meassage: "Invalid email format"});
 
     next();
+
 };
