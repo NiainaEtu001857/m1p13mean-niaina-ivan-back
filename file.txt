@@ -9,35 +9,68 @@ parametes:
 - password (string, required)
 
 
-Validation:
-- Missing fields -> 400 { "message": "Missing fields" }
-- Invalid email format -> 400 { "message": "Invalid email format" }
+Validation ():
+- Champs manquants -> 400 { "message": "Missing fields" }
+- Format d'email invalide -> 400 { "message": "Invalid email format" }
 
-Behavior:
-- Rejects if email already exists -> 400 { "message": "Email already exists" }
-- Creates shop and returns JWT
+Comportement:
+- Rejette si l'email existe deja -> 400 { "message": "Email already exists" }
+- Cree la boutique et renvoie un JWT
 
-Response:
+Reponse:
 - 201 { "token": "<jwt>" }
 
 2) POST /shop/service/add
 
+Creation d'un nouveau service
+
 parameters:
 - name (string, required)
-- price_u (number, required, >= 0)
 - brand (string, required)
 - type (string, required)
 - shop (string, required)
 - min_quantity (number, required, >= 0)
 - base_unity (string, required by validator)
-Validation:
 
-- Missing fields -> 400 { "error": "Required fields cannot be empty" }
-- price_u invalid -> 400 { "error": "Price must be a positive number" }
-- min_quantity invalid -> 400 { "error": "Min quantity must be a positive number" }
+Validation ():
+- Champs manquants -> 400 { "error": "Required fields cannot be empty" }
+- price_u invalide -> 400 { "error": "Price must be a positive number" }
+- min_quantity invalide -> 400 { "error": "Min quantity must be a positive number" }
 
-Response:
+Reponse:
 - 201 { "message": "Service created successfully", "service": { ...created document... } }
 - 500 { "error": "Server error" }
 
+3) GET /shop/service/services
 
+
+Voir la liste pour liste deroulante de id et name
+
+Comportement:
+- Retourne la liste des services avec uniquement `_id` et `name`, triee par `name` (ordre croissant)
+
+Reponse:
+- 200 [ { "_id": "...", "name": "..." }, ... ]
+- 500 { "error": "Server error" }
+
+4) POST /shop/stock/add
+
+ajout d un nouveau stock
+
+parameters:
+- service (string, required, ObjectId)
+- quantity (number, required, >= 0)
+- sale_price (number, required, >= 0)
+- purchase_price (number, required, >= 0)
+
+Validation ():
+- Champs manquants -> 400 { "error": "Required fields cannot be empty" }
+- quantity invalide -> 400 { "error": "Quantity must be a positive number" }
+- sale_price invalide -> 400 { "error": "Sale price must be a positive number" }
+- purchase_price invalide -> 400 { "error": "Purchase price must be a positive number" }
+- service id invalide -> 400 { "error": "Invalid service id" }
+- service introuvable -> 400 { "error": "Service not found" }
+
+Reponse:
+- 201 { "message": "Stock added successfully", "stock": { ...created document... } }
+- 500 { "error": "Server error" }
