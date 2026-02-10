@@ -14,16 +14,11 @@ module.exports.register = ( req, res, next) => {
 
 module.exports.vService = (req, res, next) =>
 {
-    const { name, price_u, brand, type, shop, min_quantity, base_unity } = req.body;
+    const { name, brand, type, shop, min_quantity, base_unity } = req.body;
 
-     if (!name || !brand || !type || !shop ||!base_unity || !price_u || !min_quantity) {
+     if (!name || !brand || !type || !shop ||!base_unity || !min_quantity) {
         return res.status(400).json({ error: "Required fields cannot be empty" });
     }
-
-    if (typeof price_u !== "number" || price_u < 0) {
-        return res.status(400).json({ error: "Price must be a positive number" });
-    }
-
     if (typeof min_quantity !== "number" || min_quantity < 0) {
         return res.status(400).json({ error: "Min quantity must be a positive number" });
     }
