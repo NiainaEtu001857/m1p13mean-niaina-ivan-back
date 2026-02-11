@@ -1,4 +1,5 @@
 const Service = require ("../models/Service");
+const Shop= require ("../models/Shop");
 const Stock = require('../models/Stock');
 
 
@@ -35,6 +36,15 @@ exports.addService = async (req, res) =>
     try{
 
     const { name,  brand, type, shop, min_quantity, base_unity } = req.body;
+
+    const { Types } = require('mongoose');
+    if (!Types.ObjectId.isValid(shop)) {
+        return res.status(400).json({ error: "Invalid service id" });
+    }
+    const existingService = await Shop.findById(shop);
+    if (!existingService) {
+        return res.status(400).json({ error: "Service not found" });
+    }
 
     const service = await Service.create({
         name,

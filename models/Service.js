@@ -2,10 +2,15 @@ const mongoose = require('mongoose')
 const autoSequence = require('./Sequence')
 
 const serviceShema = new mongoose.Schema({
-       name:{
-            type: String,
-            require: true
-       }, 
+     shop: { 
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: 'Shop', 
+          require: true
+     },
+     name:{
+     type: String,
+     require: true
+     }, 
        ref:{
           type: String,
           unique: true
@@ -22,11 +27,6 @@ const serviceShema = new mongoose.Schema({
             require: true
        }, 
        type:
-       {
-            type: String,
-            require: true
-       }, 
-       shop:
        {
             type: String,
             require: true

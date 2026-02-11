@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
     );
-    res.status(201).json({ token });
+    res.status(201).json({message: "Shop created successfully", user, token});
 };
 
 
