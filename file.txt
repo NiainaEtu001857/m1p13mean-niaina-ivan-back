@@ -20,6 +20,12 @@ Comportement:
 Reponse:
 - 201 { "token": "<jwt>" }
 
+Authentification Shop (important):
+- Le token JWT recu apres `POST /shop/create` ou `POST /shop/login` doit etre envoye dans le header:
+- `Authorization: Bearer <token>`
+- Routes publiques (sans token): `POST /shop/create`, `POST /shop/login`
+- Routes protegees (token obligatoire + role SHOP): toutes les routes sous `POST /shop/service/*`, `GET /shop/service/*`, `POST /shop/stock/*`
+
 2) POST /shop/service/add
 
 Creation d'un nouveau service
@@ -74,3 +80,23 @@ Validation ():
 Reponse:
 - 201 { "message": "Stock added successfully", "stock": { ...created document... } }
 - 500 { "error": "Server error" }
+
+5) POST http://localhost:3000/shop/login
+
+Login de shop
+
+parameters:
+- email (string, required)
+- password (string, required)
+
+Validation ():
+- Email introuvable -> 400 { "message": "Email doesn't exist" }
+- Mot de passe incorrect -> 400 { "message": "Invalid password" }
+
+Comportement:
+- Cherche le shop par `email`
+- Verifie le mot de passe avec bcrypt
+- Renvoie un JWT si authentification reussie
+
+Reponse:
+- 200 { "token": "<jwt>" }

@@ -1,4 +1,5 @@
 const User = require ("../models/User");
+const Shop = require ("../models/Shop");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -35,11 +36,11 @@ const { email, password, role } = req.body;
 };
 
 
-exports.login = async (req, res) =>
+const login = (Model) => async (req, res) =>
 {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await Model.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email doesn't exist" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -53,3 +54,6 @@ exports.login = async (req, res) =>
     );
     res.json({ token });
 }
+
+exports.userLogin = login(User);
+exports.shopLogin = login(Shop);
