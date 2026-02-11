@@ -35,15 +35,16 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name,  brand, type, shop, min_quantity, base_unity } = req.body;
+    const { name,  brand, type, min_quantity, base_unity } = req.body;
+    const shop = req.user && req.user.id;
 
     const { Types } = require('mongoose');
     if (!Types.ObjectId.isValid(shop)) {
-        return res.status(400).json({ error: "Invalid service id" });
+        return res.status(400).json({ error: "Invalid shop id" });
     }
     const existingService = await Shop.findById(shop);
     if (!existingService) {
-        return res.status(400).json({ error: "Service not found" });
+        return res.status(400).json({ error: "Shop not found" });
     }
 
     const service = await Service.create({
