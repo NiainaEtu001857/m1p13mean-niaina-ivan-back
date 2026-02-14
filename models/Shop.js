@@ -5,22 +5,22 @@ const shopShema = new moogose.Schema(
         name:
         {
             type: String,
-            require: true
+            required: true
         },
         type:
         {
             type: String,
-            require: true
+            required: true
         },
         description:
         {
             type: String,
-            require: true
+            required: true
         },
         email:
         {
             type: String,
-            require: true,
+            required: true,
             unique: true,
             match:[
                 /^\S+@\S+\.\S+$/,
@@ -30,12 +30,12 @@ const shopShema = new moogose.Schema(
         password:
         {
             type: String,
-            require: true
+            required: true
         },
         role: {
                 type: String,
                 default: "SHOP",
-                required: true
+                requiredd: true
             }
 
     }

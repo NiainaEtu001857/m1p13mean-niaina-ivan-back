@@ -5,11 +5,11 @@ const serviceShema = new mongoose.Schema({
      shop: { 
           type: mongoose.Schema.Types.ObjectId, 
           ref: 'Shop', 
-          require: true
+          required: true
      },
      name:{
      type: String,
-     require: true
+     required: true
      }, 
        ref:{
           type: String,
@@ -18,23 +18,23 @@ const serviceShema = new mongoose.Schema({
        /*price_u:
        {
             type: Number,
-            require: true,
+            required: true,
             min: 0
        },*/
        brand:
        {
             type: String,
-            require: true
+            required: true
        }, 
        type:
        {
             type: String,
-            require: true
+            required: true
        }, 
        min_quantity:
        {    
          type: Number,
-         require: true,
+         required: true,
          min: 0
        },
        base_unity:

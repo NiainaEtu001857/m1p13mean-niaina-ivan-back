@@ -43,6 +43,8 @@ try {
 
 const login = (Model) => async (req, res) =>
 {
+    try {
+
     const { email, password } = req.body;
 
     const user = await Model.findOne({ email });
@@ -58,6 +60,11 @@ const login = (Model) => async (req, res) =>
         { expiresIn: "1d"}
     );
     res.json({ token });
+    } catch (err)
+    {
+        return res.status(500).json({ message: "Server error"});
+
+    }
 }
 
 exports.userLogin = login(User);

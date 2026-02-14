@@ -62,7 +62,6 @@ app.use(function(err, req, res, next) {
     message: err.message || "Server error"
 
   });
-  res.render('error');
 });
 
 module.exports = app;

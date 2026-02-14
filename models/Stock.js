@@ -4,24 +4,24 @@ const stockSchema = new mongoose.Schema({
     service: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Service', 
-        require: true
+        required: true
     },
     quantity:
     {
         type: Number,
-        require: true,
+        required: true,
         min: 0
     },
     sale_price: 
     {
         type: Number,
-        require: true,
+        required: true,
         min: 0
     },
     purchase_price:
     {
         type: Number,
-        require: true,
+        required: true,
         min: 0
     },
     date:
