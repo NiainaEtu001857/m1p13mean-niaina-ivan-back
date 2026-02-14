@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 
 
 exports.register = async (req, res) => {
-const { email, password, role } = req.body;
+try {
+   const { email, password, role } = req.body;
     const exists = await User.findOne({ email });
     if (exists)
         return res.status(400).json({ message: "Email already exists"});
@@ -32,7 +33,11 @@ const { email, password, role } = req.body;
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
     );
-    res.status(201).json({ token });
+    res.status(201).json({ token }); 
+} catch (error) {
+   return res.status(500).json({ message: "Server error"}); 
+}
+
 };
 
 

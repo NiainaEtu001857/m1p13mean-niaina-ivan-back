@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
 
+    try{
+
     const { name, type, description, email, password } = req.body;
 
 
@@ -29,6 +31,10 @@ exports.register = async (req, res) => {
         { expiresIn: "1d" }
     );
     res.status(201).json({message: "Shop created successfully", user, token});
+    }catch (err)
+    {
+        return res.status(500).json({ message: "Server error"});
+    }
 };
 
 
