@@ -22,7 +22,7 @@ const shopShema = new moogose.Schema(
             type: String,
             require: true,
             unique: true,
-            math:[
+            match:[
                 /^\S+@\S+\.\S+$/,
                 'Format invalid of the email address'
             ]

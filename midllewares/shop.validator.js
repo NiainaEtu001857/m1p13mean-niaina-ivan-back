@@ -14,9 +14,9 @@ module.exports.register = ( req, res, next) => {
 
 module.exports.vService = (req, res, next) =>
 {
-    const { name, brand, type, shop, min_quantity, base_unity } = req.body;
+    const { name, brand, type,  min_quantity, base_unity } = req.body;
 
-     if (!name || !brand || !type || !shop ||!base_unity || !min_quantity) {
+     if (!name || !brand || !type  ||!base_unity || !min_quantity) {
         return res.status(400).json({ error: "Required fields cannot be empty" });
     }
     if (typeof min_quantity !== "number" || min_quantity < 0) {
