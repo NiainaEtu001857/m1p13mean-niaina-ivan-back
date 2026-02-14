@@ -1,7 +1,24 @@
-const createError = require('http-errors');
+const express = require('express');
+const app = express();
+const cors = require('cors');
+
 require("dotenv").config();
 require("./config/db")();
-const express = require('express');
+
+
+const corsOptions = {
+  origin: process.env.ORIGIN,
+  methods: ['GET', 'POST', 'PUT',  'DELETE'],
+  credentials: true
+
+}
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+
+
+const createError = require('http-errors');
+
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -11,7 +28,6 @@ const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth.routes');
 const shopRouter = require('./routes/shop.routes')
 
-const app = express();
 const favicon = require('serve-favicon')
 
 // view engine setup
