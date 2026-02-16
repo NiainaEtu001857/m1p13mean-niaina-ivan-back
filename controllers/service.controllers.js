@@ -1,6 +1,7 @@
 const Service = require ("../models/Service");
 const Shop= require ("../models/Shop");
 const Stock = require('../models/Stock');
+const User = require('../models/User');
 
 
 exports.addStock = async (req, res) => {
@@ -35,32 +36,57 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name,  brand, type, min_quantity, base_unity } = req.body;
-    const shop = req.user && req.user.id;
+    const { name,  brand, type, min_quantity, base_unity, attributes } = req.body;
+    const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');
-    if (!Types.ObjectId.isValid(shop)) {
+    if (!Types.ObjectId.isValid(tokenId)) {
         return res.status(400).json({ error: "Invalid shop id" });
     }
-    const existingService = await Shop.findById(shop);
-    if (!existingService) {
-        return res.status(400).json({ error: "Shop not found" });
+
+    let existingShop = await Shop.findById(tokenId);
+
+    // Fallback: SHOP role may come from User collection; try resolving its shop by email.
+    if (!existingShop) {
+        const authUser = await User.findById(tokenId).select('email');
+        if (authUser?.email) {
+            existingShop = await Shop.findOne({ email: authUser.email });
+        }
     }
+
+    // Last resort if caller passes an explicit shop id.
+    if (!existingShop && Types.ObjectId.isValid(req.body.shop)) {
+        existingShop = await Shop.findById(req.body.shop);
+    }
+
+    if (!existingShop) {
+        return res.status(400).json({ error: "Shop not found for this account" });
+    }
+
+    const cleanAttributes = Array.isArray(attributes)
+        ? attributes
+            .map((attr) => ({
+                key: (attr?.key || '').trim(),
+                value: (attr?.value || '').trim()
+            }))
+            .filter((attr) => attr.key && attr.value)
+        : [];
 
     const service = await Service.create({
         name,
         brand,
         type,
-        shop,
+        shop: existingShop._id,
         min_quantity,
-        base_unity
+        base_unity,
+        attributes: cleanAttributes
     });
 
     res.status(201).json({message: "Service created successfully", service});
     }catch (err)
     {
+        console.error(err);
         res.status(500).json({ error: "Server error"});
-        console.log(err);
     }
 }
 
