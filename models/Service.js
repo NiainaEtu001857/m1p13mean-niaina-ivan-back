@@ -40,7 +40,13 @@ const serviceShema = new mongoose.Schema({
        base_unity:
        {
             type: String,
-       }
+       },
+       attributes: [
+          {
+               key: { type: String, require: true, trim: true},
+               value: { type: String, require: true, trim: true}
+          }
+       ]
     }    
 );
 

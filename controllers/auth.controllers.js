@@ -59,7 +59,11 @@ const login = (Model) => async (req, res) =>
         process.env.JWT_SECRET,
         { expiresIn: "1d"}
     );
-    res.json({ token });
+    res.json({ token, user:{
+        id: user._id,
+        email: user.email,
+        role: user.role,
+    } });
     } catch (err)
     {
         return res.status(500).json({ message: "Server error"});
