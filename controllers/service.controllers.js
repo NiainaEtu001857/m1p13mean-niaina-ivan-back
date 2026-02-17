@@ -94,7 +94,7 @@ exports.addService = async (req, res) =>
 exports.getServices = async (req, res) =>
 {
     try{
-        const services = await Service.find().select(' _id name').sort({name: 1});
+        const services = await Service.find().sort({_id: -1}).limit(5);
 
         res.status(200).json(services)
 
