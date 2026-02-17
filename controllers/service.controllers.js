@@ -104,3 +104,21 @@ exports.getServices = async (req, res) =>
         res.status(500).json({ error: 'Server error'});
     }
 }
+
+exports.getStocks = async (req, res) =>
+{
+    try{
+        const shop = req.user && req.user.id;
+
+        const stock = await Stock.find()
+        .sort({ _id: -1})
+        .populate({ path: 'service',select: 'name type brand ref shop', match: {shop} }).sort({ _id: -1}).limit(5);
+
+        const stocks= stock.filter((stock) =>stock.service);
+        res.status(200).json(stocks);
+    }
+    catch (err)
+    {
+        res.status(500).json({ error: "Server error"});
+    }
+};
