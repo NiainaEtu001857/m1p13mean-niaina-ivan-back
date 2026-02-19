@@ -36,7 +36,7 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name,  brand, type, min_quantity, base_unity, attributes } = req.body;
+    const { name,  detail, type, min_quantity, base_unity, attributes } = req.body;
     const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');
@@ -74,7 +74,7 @@ exports.addService = async (req, res) =>
 
     const service = await Service.create({
         name,
-        brand,
+        detail,
         type,
         shop: existingShop._id,
         min_quantity,
@@ -112,7 +112,7 @@ exports.getStocks = async (req, res) =>
 
         const stock = await Stock.find()
         .sort({ _id: -1})
-        .populate({ path: 'service',select: 'name type brand ref shop', match: {shop} }).sort({ _id: -1}).limit(5);
+        .populate({ path: 'service',select: 'name type detail ref shop', match: {shop} }).sort({ _id: -1}).limit(5);
 
         const stocks= stock.filter((stock) =>stock.service);
         res.status(200).json(stocks);

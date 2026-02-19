@@ -21,7 +21,7 @@ const serviceShema = new mongoose.Schema({
             required: true,
             min: 0
        },*/
-       brand:
+       detail:
        {
             type: String,
             required: true
