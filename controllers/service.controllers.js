@@ -46,7 +46,6 @@ exports.addService = async (req, res) =>
 
     let existingShop = await Shop.findById(tokenId);
 
-    // Fallback: SHOP role may come from User collection; try resolving its shop by email.
     if (!existingShop) {
         const authUser = await User.findById(tokenId).select('email');
         if (authUser?.email) {
@@ -54,7 +53,6 @@ exports.addService = async (req, res) =>
         }
     }
 
-    // Last resort if caller passes an explicit shop id.
     if (!existingShop && Types.ObjectId.isValid(req.body.shop)) {
         existingShop = await Shop.findById(req.body.shop);
     }
@@ -94,8 +92,18 @@ exports.addService = async (req, res) =>
 exports.getServices = async (req, res) =>
 {
     try{
-        const services = await Service.find().sort({_id: -1}).limit(5);
+        const token = req.user && req.user.id;
+        const { Types } = require("mongoose");
 
+        if (!Types.ObjectId.isValid(token))
+            return res.status(401).json({ error: "Unauthorized"});
+
+        let shop = await Shop.findById(token);
+
+        if (!shop)
+            return res.status(400).json({ error: "Pas de boutiques trouvé sur cette compte"});
+
+        const services = await Service.find({ shop: shop._id }).sort({_id: -1}).limit(5);
         res.status(200).json(services)
 
     }catch (err)
@@ -108,11 +116,21 @@ exports.getServices = async (req, res) =>
 exports.getStocks = async (req, res) =>
 {
     try{
-        const shop = req.user && req.user.id;
+        const token = req.user && req.user.id;
+        const { Types } = require("mongoose");
+
+        if (!Types.ObjectId.isValid(token))
+            return res.status(401).json({ error: "Unauthorized"});
+
+        let shop = await Shop.findById(token);
+        if (!shop)
+            return res.status(400).json({ error: "Pas de boutiques trouvé sur cette compte"});
+
+
 
         const stock = await Stock.find()
         .sort({ _id: -1})
-        .populate({ path: 'service',select: 'name type detail ref shop', match: {shop} }).sort({ _id: -1}).limit(5);
+        .populate({ path: 'service',select: 'name type detail ref shop', match: {shop: shop._id} }).sort({ _id: -1}).limit(5);
 
         const stocks= stock.filter((stock) =>stock.service);
         res.status(200).json(stocks);
