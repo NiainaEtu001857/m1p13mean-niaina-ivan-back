@@ -13,6 +13,10 @@ exports.register = async (req, res) => {
     if (exists)
         return res.status(400).json({ message: "Email already exists"});
 
+      if (!process.env.JWT_SECRET)
+     {
+         throw new Error("JWT_SERCRE is not defined");
+     }
 
     const hashedPass = await bcrypt.hash(password, 10);
 

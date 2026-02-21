@@ -34,8 +34,7 @@ const shopShema = new moogose.Schema(
         },
         role: {
                 type: String,
-                default: "SHOP",
-                requiredd: true
+                default: "SHOP"
             }
 
     }
