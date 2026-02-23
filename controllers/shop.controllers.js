@@ -5,7 +5,10 @@ const jwt = require("jsonwebtoken");
 exports.getShops = async (req, res) =>
 {
     try{
-        const shops = await Shop.find().sort({_id: -1}).limit(5).select('type, name, description, email');
+        const shops = await Shop.find()
+            .sort({ _id: -1 })
+            .limit(5)
+            .select('_id type name description email');
         res.status(200).json(shops)
 
     }catch (err)
@@ -56,5 +59,3 @@ exports.register = async (req, res) => {
         return res.status(500).json({ message: "Server error"});
     }
 };
-
-
