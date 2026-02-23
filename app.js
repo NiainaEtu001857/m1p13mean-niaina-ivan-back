@@ -27,6 +27,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth.routes');
 const shopRouter = require('./routes/shop.routes')
+const clientRouter = require('./routes/client.routes')
 
 const favicon = require('serve-favicon')
 
@@ -45,6 +46,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/shop', shopRouter);
+app.use('/client', clientRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
