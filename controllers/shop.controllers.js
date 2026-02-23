@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 exports.getShops = async (req, res) =>
 {
     try{
-        const shops = await Shop.find().sort({_id: -1}).limit(5);
+        const shops = await Shop.find().sort({_id: -1}).limit(5).select('type, name, description, email');
         res.status(200).json(shops)
 
     }catch (err)
