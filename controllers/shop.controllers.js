@@ -1,6 +1,8 @@
 const Shop = require ("../models/Shop");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Service = require("../models/Service");
+const { Types } = require("mongoose");
 
 exports.register = async (req, res) => {
 
@@ -35,6 +37,82 @@ exports.register = async (req, res) => {
     {
         return res.status(500).json({ message: "Server error"});
     }
+};
+
+exports.getShops = async (req, res) => {
+    try {
+       const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
+        const shops = await Shop.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalShops = await Shop.countDocuments();
+        const totalPages = Math.ceil(totalShops / limit);
+
+        res.json({
+            page,
+            limit,
+            totalPages,
+            totalShops,
+            shops
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }   
+};
+
+exports.getShopById = async (req, res) => {
+    try {
+        const shop = await Shop.findById(req.params.id);
+        if (!shop) return res.status(404).json({ message: "Shop not found" });
+        res.json(shop);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+// shop.controllers.js
+exports.getShopAndServices = async (req, res) => {
+  try {
+    // const shopId = req.query.shopId || req.params.shopId;
+    const shopId = "698debf880b788834ef0d409";
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const shop = await Shop.findById(shopId);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop non trouvé" }); // return important !
+    }
+
+    const totalServices = await Service.countDocuments({ shop: shopId });
+
+    const services = await Service.find({ shop: shopId })
+      .select('-shop')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalServices / limit);
+
+    return res.json({
+      shop,
+      services,
+      page,
+      totalPages,
+      totalServices
+    });
+
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) {
+      return res.status(500).json({ message: "Erreur serveur" });
+    }
+  }
 };
 
 
