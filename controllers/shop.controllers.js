@@ -2,6 +2,22 @@ const Shop = require ("../models/Shop");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+exports.getShops = async (req, res) =>
+{
+    try{
+        const shops = await Shop.find().sort({_id: -1}).limit(5);
+        res.status(200).json(shops)
+
+    }catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ error: 'Server error'});
+    }
+}
+
+
+
+
 exports.register = async (req, res) => {
 
     try{
