@@ -24,8 +24,7 @@ exports.addStock = async (req, res) => {
             sale_price,
             purchase_price
         });
-
-        res.status(201).json({ message: "Stock added successfully", stock });
+res.status(201).json({ message: "Stock added successfully", stock });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
@@ -89,6 +88,10 @@ exports.addService = async (req, res) =>
 }
 
 
+
+
+
+
 exports.getServices = async (req, res) =>
 {
     try{
@@ -112,6 +115,21 @@ exports.getServices = async (req, res) =>
         res.status(500).json({ error: 'Server error'});
     }
 }
+
+exports.getServicesByShopId = async (req, res) => {
+    try {
+        const { id } = req.params; 
+
+        const services = await Service.find({ shop: id });
+        return res.status(200).json(services);
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Server error" });
+    }
+};
+
+
 
 exports.getStocks = async (req, res) =>
 {
