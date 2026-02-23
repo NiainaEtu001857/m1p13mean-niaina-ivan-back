@@ -1,5 +1,6 @@
 const User = require ("../models/User");
 const Shop = require ("../models/Shop");
+const Client = require ("../models/Client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -73,3 +74,4 @@ const login = (Model) => async (req, res) =>
 
 exports.userLogin = login(User);
 exports.shopLogin = login(Shop);
+exports.clientLogin = login(Client);
