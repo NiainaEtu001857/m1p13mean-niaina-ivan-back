@@ -1,8 +1,8 @@
-const Client = require("../models/Client");
 const Shop = require("../models/Shop");
 const Service = require("../models/Service");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Client = require("../models/Client");
 
 exports.register = async (req, res) => {
   try {
@@ -54,14 +54,17 @@ exports.getShops = async (req, res) => {
   }
 };
 
-exports.getServicesByShopId = async (req, res) => {
+exports.getClients= async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const services = await Service.find({ shop: id }).sort({ _id: -1 });
-    return res.status(200).json(services);
+    const client= await Client.find()
+      .sort({ _id: -1 })
+      .limit(10)
+      .select("_id first_name email");
+    res.status(200).json(client);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
+
+

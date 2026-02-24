@@ -6,11 +6,12 @@ const stock = require('./stock.routes')
 const { shopLogin } = require('../controllers/auth.controllers')
 const shopController = require('../controllers/shop.controllers');
 
-
 router.post('/login', shopLogin);
 router.post('/create',validate.register, shopController.register );
 
 router.get('/shops',authMiddleware ,shopController.getShops);
+
+
 
 router.use('/service', authMiddleware, requireRole("SHOP"),service);
 router.use('/stock', authMiddleware, requireRole("SHOP"), stock);
