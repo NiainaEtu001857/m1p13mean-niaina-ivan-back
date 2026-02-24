@@ -40,6 +40,56 @@ exports.getShops = async (req, res) =>
 }
 
 
+exports.getShopById = async (req, res) => {
+    try {
+        const shop = await Shop.findById(req.params.id);
+        if (!shop) return res.status(404).json({ message: "Shop not found" });
+        res.json(shop);
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+exports.getShopAndServices = async (req, res) => {
+  try {
+    const shopId = req.query.shopId || req.params.shopId;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const shop = await Shop.findById(shopId);
+    if (!shop) {
+      return res.status(404).json({ message: "Shop non trouvé" }); // return important !
+    }
+
+    const totalServices = await Service.countDocuments({ shop: shopId });
+
+    const services = await Service.find({ shop: shopId })
+      .select('-shop')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalServices / limit);
+
+    return res.json({
+      shop,
+      services,
+      page,
+      totalPages,
+      totalServices
+    });
+
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) {
+      return res.status(500).json({ message: "Erreur serveur" });
+    }
+  }
+};
+
 
 
 exports.register = async (req, res) => {
