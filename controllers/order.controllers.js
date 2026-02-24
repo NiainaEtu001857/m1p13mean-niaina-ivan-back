@@ -23,13 +23,14 @@ exports.createOrder = async (req, res)=>
                 return res.status(404).json({ message: "Service not found"})
             }
 
-            const totalPrice = item.quantity * item.unitPrice
+            const unitPrice = Number(service.sale_price || 0)
+            const totalPrice = Number(item.quantity) * unitPrice
 
             orderDetail.push({
                 service: service._id,
                 serviceName: service.name,
                 quantity: item.quantity,
-                unitPrice: item.unitPrice,
+                unitPrice,
                 totalPrice 
             })
             totalAmount += totalPrice

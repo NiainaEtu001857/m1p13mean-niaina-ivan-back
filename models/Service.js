@@ -15,12 +15,12 @@ const serviceShema = new mongoose.Schema({
           type: String,
           unique: true
        },
-       /*price_u:
+       sale_price:
        {
             type: Number,
             required: true,
             min: 0
-       },*/
+       },
        detail:
        {
             type: String,

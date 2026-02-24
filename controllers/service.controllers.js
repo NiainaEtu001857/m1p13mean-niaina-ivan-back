@@ -6,7 +6,7 @@ const User = require('../models/User');
 
 exports.addStock = async (req, res) => {
     try {
-        const { service, quantity, sale_price, purchase_price } = req.body;
+        const { service, quantity } = req.body;
 
         const { Types } = require('mongoose');
         if (!Types.ObjectId.isValid(service)) {
@@ -20,9 +20,7 @@ exports.addStock = async (req, res) => {
 
         const stock = await Stock.create({
             service,
-            quantity,
-            sale_price,
-            purchase_price
+            quantity
         });
 res.status(201).json({ message: "Stock added successfully", stock });
     } catch (err) {
@@ -35,7 +33,7 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name,  detail, type, min_quantity, base_unity, attributes } = req.body;
+    const { name, detail, type, min_quantity, base_unity, attributes, sale_price } = req.body;
     const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');
@@ -74,7 +72,8 @@ exports.addService = async (req, res) =>
         detail,
         type,
         shop: existingShop._id,
-        min_quantity,
+        min_quantity: Number(min_quantity),
+        sale_price: Number(sale_price),
         base_unity,
         attributes: cleanAttributes
     });
@@ -148,7 +147,7 @@ exports.getStocks = async (req, res) =>
 
         const stock = await Stock.find()
         .sort({ _id: -1})
-        .populate({ path: 'service',select: 'name type detail ref shop', match: {shop: shop._id} }).sort({ _id: -1}).limit(5);
+        .populate({ path: 'service',select: 'name type detail ref shop sale_price', match: {shop: shop._id} }).sort({ _id: -1}).limit(5);
 
         const stocks= stock.filter((stock) =>stock.service);
         res.status(200).json(stocks);
