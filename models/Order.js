@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const autoSequence = require('./Sequence')
 
 const orderDetailSchema =  new mongoose.Schema({
     service: {
@@ -28,6 +29,10 @@ const orderDetailSchema =  new mongoose.Schema({
 })
 
 const orderSchema = new mongoose.Schema({
+    ref: {
+        type: String,
+        unique: true
+    },
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Client',
@@ -60,5 +65,6 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.index({ client: 1, createdAt: -1})
 orderSchema.index({ shop: 1, createdAt: -1})
+autoSequence(orderSchema, 'ref', 'CMD-', 'orderSeq');
 
 module.exports = mongoose.model('Order', orderSchema)
