@@ -42,10 +42,30 @@ exports.register = async (req, res) => {
 
 exports.getShops = async (req, res) => {
   try {
-    const shops = await Shop.find()
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit, 10) || 5, 1);
+    const skip = (page - 1) * limit;
+
+    const [shops, totalItems] = await Promise.all([
+      Shop.find()
       .sort({ _id: -1 })
-      .limit(5)
-      .select("_id type name description email");
+      .skip(skip)
+      .limit(limit)
+      .select("_id type name description email"),
+      Shop.countDocuments()
+    ]);
+
+    const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
+
+    if (hasPaginationQuery) {
+      return res.status(200).json({
+        data: shops,
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.max(Math.ceil(totalItems / limit), 1)
+      });
+    }
 
     res.status(200).json(shops);
   } catch (err) {
@@ -56,15 +76,35 @@ exports.getShops = async (req, res) => {
 
 exports.getClients= async (req, res) => {
   try {
-    const client= await Client.find()
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
+    const skip = (page - 1) * limit;
+
+    const [client, totalItems] = await Promise.all([
+      Client.find()
       .sort({ _id: -1 })
-      .limit(10)
-      .select("_id first_name email");
+      .skip(skip)
+      .limit(limit)
+      .select("_id first_name email"),
+      Client.countDocuments()
+    ]);
+
+    const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
+
+    if (hasPaginationQuery) {
+      return res.status(200).json({
+        data: client,
+        page,
+        limit,
+        totalItems,
+        totalPages: Math.max(Math.ceil(totalItems / limit), 1)
+      });
+    }
+
     res.status(200).json(client);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 

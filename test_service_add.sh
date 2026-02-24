@@ -18,7 +18,6 @@ create_shop_resp=$(curl -sS -X POST "$BASE_URL/shop/create" \
   -H "Content-Type: application/json" \
   -d "{\"name\":\"$SHOP_NAME\",\"type\":\"$SHOP_TYPE\",\"description\":\"$SHOP_DESC\",\"email\":\"$SHOP_EMAIL\",\"password\":\"$SHOP_PASS\"}")
 
-# Extract token and shop id (user._id) without jq
 SHOP_TOKEN=$(CREATE_SHOP_RESP="$create_shop_resp" python3 - <<'PY'
 import json,os
 obj=json.loads(os.environ.get("CREATE_SHOP_RESP",""))

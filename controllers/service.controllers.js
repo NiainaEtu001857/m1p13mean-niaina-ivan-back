@@ -105,7 +105,27 @@ exports.getServices = async (req, res) =>
         if (!shop)
             return res.status(400).json({ error: "Pas de boutiques trouvé sur cette compte"});
 
-        const services = await Service.find({ shop: shop._id }).sort({_id: -1}).limit(5);
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.max(parseInt(req.query.limit, 10) || 5, 1);
+        const skip = (page - 1) * limit;
+
+        const [services, totalItems] = await Promise.all([
+            Service.find({ shop: shop._id }).sort({_id: -1}).skip(skip).limit(limit),
+            Service.countDocuments({ shop: shop._id })
+        ]);
+
+        const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
+
+        if (hasPaginationQuery) {
+            return res.status(200).json({
+                data: services,
+                page,
+                limit,
+                totalItems,
+                totalPages: Math.max(Math.ceil(totalItems / limit), 1)
+            });
+        }
+
         res.status(200).json(services)
 
     }catch (err)
@@ -117,10 +137,32 @@ exports.getServices = async (req, res) =>
 
 exports.getServicesByShopId = async (req, res) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.max(parseInt(req.query.limit, 10) || 5, 1);
+        const skip = (page - 1) * limit;
 
-        const services = await Service.find({ shop: id });
-        return res.status(200).json(services);
+        const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
+
+        if (!hasPaginationQuery) {
+            const services = await Service.find({ shop: id });
+            return res.status(200).json(services);
+        }
+
+        const [services, totalItems, shop] = await Promise.all([
+            Service.find({ shop: id }).sort({ _id: -1 }).skip(skip).limit(limit),
+            Service.countDocuments({ shop: id }),
+            Shop.findById(id).select('_id name email type description')
+        ]);
+
+        return res.status(200).json({
+            services,
+            shop,
+            page,
+            limit,
+            totalItems,
+            totalPages: Math.max(Math.ceil(totalItems / limit), 1)
+        });
 
     } catch (err) {
         console.error(err);
@@ -143,13 +185,32 @@ exports.getStocks = async (req, res) =>
         if (!shop)
             return res.status(400).json({ error: "Pas de boutiques trouvé sur cette compte"});
 
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.max(parseInt(req.query.limit, 10) || 5, 1);
+        const skip = (page - 1) * limit;
+        const serviceIds = await Service.find({ shop: shop._id }).distinct('_id');
 
+        const [stocks, totalItems] = await Promise.all([
+            Stock.find({ service: { $in: serviceIds } })
+                .sort({ _id: -1})
+                .skip(skip)
+                .limit(limit)
+                .populate({ path: 'service',select: 'name type detail ref shop sale_price' }),
+            Stock.countDocuments({ service: { $in: serviceIds } })
+        ]);
 
-        const stock = await Stock.find()
-        .sort({ _id: -1})
-        .populate({ path: 'service',select: 'name type detail ref shop sale_price', match: {shop: shop._id} }).sort({ _id: -1}).limit(5);
+        const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
 
-        const stocks= stock.filter((stock) =>stock.service);
+        if (hasPaginationQuery) {
+            return res.status(200).json({
+                data: stocks,
+                page,
+                limit,
+                totalItems,
+                totalPages: Math.max(Math.ceil(totalItems / limit), 1)
+            });
+        }
+
         res.status(200).json(stocks);
     }
     catch (err)
