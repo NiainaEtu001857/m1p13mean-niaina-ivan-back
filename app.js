@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -28,6 +30,8 @@ const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth.routes');
 const shopRouter = require('./routes/shop.routes')
 const clientRouter = require('./routes/client.routes')
+const orderRoutes = require('./routes/order.routes')
+
 
 const favicon = require('serve-favicon')
 
@@ -47,6 +51,7 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/shop', shopRouter);
 app.use('/client', clientRouter);
+app.use('/orders', orderRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
