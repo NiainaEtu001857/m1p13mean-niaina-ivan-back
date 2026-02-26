@@ -41,6 +41,10 @@ const serviceShema = new mongoose.Schema({
        {
             type: String,
        },
+       photo: 
+       {
+          type: String
+       },
        attributes: [
           {
                key: { type: String, require: true, trim: true},

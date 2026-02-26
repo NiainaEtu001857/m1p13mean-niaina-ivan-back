@@ -32,6 +32,10 @@ const shopShema = new moogose.Schema(
             type: String,
             required: true
         },
+        photo: 
+        {
+            type: String,
+        },
         role: {
                 type: String,
                 default: "SHOP",

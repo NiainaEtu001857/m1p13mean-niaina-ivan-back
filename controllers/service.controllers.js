@@ -36,7 +36,7 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name,  brand, type, min_quantity, base_unity, attributes } = req.body;
+    const { name,  brand, type, min_quantity, photo , base_unity, attributes } = req.body;
     const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');
@@ -79,6 +79,7 @@ exports.addService = async (req, res) =>
         shop: existingShop._id,
         min_quantity,
         base_unity,
+        photo,
         attributes: cleanAttributes
     });
 

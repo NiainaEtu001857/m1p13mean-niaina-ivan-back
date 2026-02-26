@@ -8,7 +8,7 @@ exports.register = async (req, res) => {
 
     try{
 
-    const { name, type, description, email, password } = req.body;
+    const { name, type, description, email, photo , password } = req.body;
 
 
     const exists = await Shop.findOne({ email });
@@ -23,6 +23,7 @@ exports.register = async (req, res) => {
         type,
         description,
         email,
+        photo,
         password: hashedPass,
         role: "SHOP"
     });
@@ -77,8 +78,7 @@ exports.getShopById = async (req, res) => {
 // shop.controllers.js
 exports.getShopAndServices = async (req, res) => {
   try {
-    // const shopId = req.query.shopId || req.params.shopId;
-    const shopId = "698debf880b788834ef0d409";
+    const shopId = req.query.shopId || req.params.shopId;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -86,7 +86,7 @@ exports.getShopAndServices = async (req, res) => {
 
     const shop = await Shop.findById(shopId);
     if (!shop) {
-      return res.status(404).json({ message: "Shop non trouvé" }); // return important !
+      return res.status(404).json({ message: "Shop non trouvé" }); 
     }
 
     const totalServices = await Service.countDocuments({ shop: shopId });
