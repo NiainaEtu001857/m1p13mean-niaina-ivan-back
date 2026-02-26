@@ -101,10 +101,10 @@ exports.register = async (req, res) => {
         
         let photo = null;
         if (req.file) {
-        photo = path.join('public','assets', 'img', 'shop' , req.file.filename).replace(/\\/g, '/');
+            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+            photo = `${baseUrl}/public/img/shop/${req.file.filename}`;
         }
 
-        console.log("Processed photo path:", photo);
         photo = photo.toString();
 
         console.log("Received shop registration data:", { name, type, description, email, password, photo });

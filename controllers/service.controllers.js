@@ -33,7 +33,12 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name, detail, type, min_quantity, base_unity, photo, attributes, sale_price } = req.body;
+    const { name, detail, type, min_quantity, base_unity, attributes, sale_price } = req.body;
+    let photo = null;
+    if (req.file) {
+        const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+        photo = `${baseUrl}/public/img/services/${req.file.filename}`;
+    }
     const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');

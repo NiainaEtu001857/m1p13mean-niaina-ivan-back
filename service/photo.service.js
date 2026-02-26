@@ -7,6 +7,12 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 
-const upload = multer({ storage });
+const storageService = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'assets/img/services'),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
 
-module.exports = { upload };
+const upload = multer({ storage });
+const uploadService = multer({ storage: storageService });
+
+module.exports = { upload , uploadService };
