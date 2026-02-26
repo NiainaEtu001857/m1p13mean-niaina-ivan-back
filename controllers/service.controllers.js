@@ -33,7 +33,7 @@ exports.addService = async (req, res) =>
 {
     try{
 
-    const { name, detail, type, min_quantity, base_unity, attributes, sale_price } = req.body;
+    const { name, detail, type, min_quantity, base_unity, photo, attributes, sale_price } = req.body;
     const tokenId = req.user && req.user.id;
 
     const { Types } = require('mongoose');
@@ -75,6 +75,7 @@ exports.addService = async (req, res) =>
         min_quantity: Number(min_quantity),
         sale_price: Number(sale_price),
         base_unity,
+        photo,
         attributes: cleanAttributes
     });
 

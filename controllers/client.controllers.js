@@ -51,7 +51,7 @@ exports.getShops = async (req, res) => {
       .sort({ _id: -1 })
       .skip(skip)
       .limit(limit)
-      .select("_id type name description email"),
+      .select("_id type name description email photo"),
       Shop.countDocuments()
     ]);
 

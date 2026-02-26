@@ -67,9 +67,20 @@ const login = (Model) => async (req, res) =>
     } });
     } catch (err)
     {
+        console.error(err);
         return res.status(500).json({ message: "Server error"});
 
     }
+}
+
+exports.logout = (req, res) =>
+{
+    try {
+        res.clearCookie("token");
+        res.json({ message: "Logged out successfully" });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }   
 }
 
 exports.userLogin = login(User);

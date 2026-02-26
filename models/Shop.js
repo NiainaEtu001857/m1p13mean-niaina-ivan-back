@@ -27,6 +27,11 @@ const shopShema = new moogose.Schema(
                 'Format invalid of the email address'
             ]
         },
+        photo:
+        {
+            type: String,
+            required: true
+        },
         password:
         {
             type: String,

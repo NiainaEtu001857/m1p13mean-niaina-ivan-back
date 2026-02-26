@@ -5,9 +5,11 @@ const service = require('./service.routes')
 const stock = require('./stock.routes')
 const { shopLogin } = require('../controllers/auth.controllers')
 const shopController = require('../controllers/shop.controllers');
+const { upload } = require('../service/photo.service');
 
 router.post('/login', shopLogin);
-router.post('/create',validate.register, shopController.register );
+router.post('/create' ,upload.single('photo') , shopController.register );
+// router.post('/create',validate.register ,upload.single('photo') , shopController.register );
 
 router.get('/shops',authMiddleware ,shopController.getShops);
 
