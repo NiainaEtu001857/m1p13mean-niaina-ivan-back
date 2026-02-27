@@ -1,7 +1,6 @@
 const Service = require ("../models/Service");
 const Shop= require ("../models/Shop");
 const Stock = require('../models/Stock');
-const User = require('../models/User');
 
 
 exports.addStock = async (req, res) => {
@@ -49,10 +48,7 @@ exports.addService = async (req, res) =>
     let existingShop = await Shop.findById(tokenId);
 
     if (!existingShop) {
-        const authUser = await User.findById(tokenId).select('email');
-        if (authUser?.email) {
-            existingShop = await Shop.findOne({ email: authUser.email });
-        }
+        return res.status(400).json({ error: "Invalid shop id" });
     }
 
     if (!existingShop && Types.ObjectId.isValid(req.body.shop)) {
