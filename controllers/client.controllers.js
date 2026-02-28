@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
       last_name,
       email,
       password: hashedPass,
-      role: "Client",
+      role: "CLIENT",
     });
 
     const token = jwt.sign(

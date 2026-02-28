@@ -29,7 +29,7 @@ const client = new moogose.Schema(
         },
         role: {
                 type: String,
-                default: "Client"
+                default: "CLIENT"
             }
 
     }

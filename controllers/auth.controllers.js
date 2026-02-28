@@ -1,4 +1,4 @@
-const User = require ("../models/User");
+const Admin = require ("../models/Admin");
 const Shop = require ("../models/Shop");
 const Client = require ("../models/Client");
 const bcrypt = require("bcryptjs");
@@ -83,6 +83,6 @@ exports.logout = (req, res) =>
     }   
 }
 
-exports.userLogin = login(User);
+exports.AdminLogin = login(Admin);
 exports.shopLogin = login(Shop);
 exports.clientLogin = login(Client);

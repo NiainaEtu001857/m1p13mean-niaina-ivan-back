@@ -1,6 +1,6 @@
 const mogoose = require("mongoose");
 
-const userSchema = new mogoose.Schema({
+const adminSchema = new mogoose.Schema({
     email: {
         type: String,
         required: true,
@@ -12,9 +12,8 @@ const userSchema = new mogoose.Schema({
     },
     role: {
         type: String,
-        enum: ["ADMIN", "SHOP", "CLIENT"],
-        default: "CLIENT"
+        default: "ADMIN"
     }
 }, { Timestamps: true });
 
-module.exports = mogoose.model("User", userSchema);
+module.exports = mogoose.model("Admin", adminSchema);

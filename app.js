@@ -27,7 +27,7 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth.routes');
+const AdminRouter = require('./routes/admin.routes');
 const shopRouter = require('./routes/shop.routes')
 const clientRouter = require('./routes/client.routes')
 const orderRoutes = require('./routes/order.routes')
@@ -48,7 +48,7 @@ app.use('/public', express.static(path.join(__dirname, 'assets')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/admin', AdminRouter);
 app.use('/shop', shopRouter);
 app.use('/client', clientRouter);
 app.use('/orders', orderRoutes);
