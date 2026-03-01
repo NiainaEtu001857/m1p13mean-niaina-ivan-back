@@ -5,16 +5,10 @@ const Service = require("../models/Service");
 
 exports.getStats = async (req, res) =>{
     try{
-        // const token = req.user && req.user.id;
-        // const { Types } = require("mongoose");
-
-        // if (!Types.ObjectId.isValid(token))
-        //     return res.status(401).json({ error: "Unauthorized"});
-
-        const clients = await Client.countDocuments();
-        const shops = await Shop.countDocuments();
-        const services = await Service.countDocuments();
-        res.status(200).json({ clients, shops, services });
+        const nbrClient = await Client.countDocuments();
+        const nbrShop = await Shop.countDocuments();
+        const nbrService= await Service.countDocuments();
+        res.status(200).json({ nbrClient , nbrShop, nbrService });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
