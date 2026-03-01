@@ -1,6 +1,7 @@
 const Client = require("../models/Client");
 const Shop = require("../models/Shop");
 const Service = require("../models/Service");
+const mongoose = require("mongoose");
 
 exports.getStats = async (req, res) =>{
     try{
@@ -85,5 +86,24 @@ exports.getAllServices = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+}
+
+exports.deleteClient = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "ID client invalide" });
+        }
+
+        const deletedClient = await Client.findByIdAndDelete(id);
+        if (!deletedClient) {
+            return res.status(404).json({ error: "Client introuvable" });
+        }
+
+        return res.status(200).json({ message: "Client supprimé avec succès" });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 }
