@@ -5,9 +5,12 @@
      * create a network
           
                docker network create net-e
-     * run Monogdb
+     * run MongoDB
                
                docker run -d --name mongodb --network net-e -p 27017:27017 mongo:7
+     * ensure .env has:
+
+               MONGO_URI=mongodb://mongodb:27017/<your_db_name>
      * build image
           
                docker build -t back .
@@ -28,4 +31,3 @@
    * To run use: 
      
           npm start
-
