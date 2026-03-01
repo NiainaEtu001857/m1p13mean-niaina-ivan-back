@@ -33,10 +33,13 @@ exports.addService = async (req, res) =>
     try{
 
     const { name, detail, type, min_quantity, base_unity, attributes, sale_price } = req.body;
-    let photo = null;
+    let photo = (req.body.photo || "").trim() || null;
     if (req.file) {
         const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
         photo = `${baseUrl}/public/img/services/${req.file.filename}`;
+    }
+    if (!photo) {
+        return res.status(400).json({ error: "Photo is required" });
     }
     const tokenId = req.user && req.user.id;
 
@@ -59,8 +62,17 @@ exports.addService = async (req, res) =>
         return res.status(400).json({ error: "Shop not found for this account" });
     }
 
-    const cleanAttributes = Array.isArray(attributes)
-        ? attributes
+    let parsedAttributes = attributes;
+    if (typeof attributes === 'string') {
+        try {
+            parsedAttributes = JSON.parse(attributes);
+        } catch {
+            parsedAttributes = [];
+        }
+    }
+
+    const cleanAttributes = Array.isArray(parsedAttributes)
+        ? parsedAttributes
             .map((attr) => ({
                 key: (attr?.key || '').trim(),
                 value: (attr?.value || '').trim()

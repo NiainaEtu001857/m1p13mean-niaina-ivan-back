@@ -5,8 +5,7 @@ const { uploadService } = require('../service/photo.service');
 
 router.get("/services",controllers.getServices)
 router.get("/services/:id", controllers.getServicesByShopId);
-router.post("/add", inputValidator.vService, uploadService.single('photo') , controllers.addService);
+router.post("/add", uploadService.single('photo'), inputValidator.vService, controllers.addService);
 
 
 module.exports = router;
-
