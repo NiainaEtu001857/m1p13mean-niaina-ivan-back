@@ -1,14 +1,54 @@
 const Client = require("../models/Client");
 const Shop = require("../models/Shop");
 const Service = require("../models/Service");
+const Order = require("../models/Order");
 const mongoose = require("mongoose");
 
 exports.getStats = async (req, res) =>{
     try{
-        const nbrClient = await Client.countDocuments();
-        const nbrShop = await Shop.countDocuments();
-        const nbrService= await Service.countDocuments();
-        res.status(200).json({ nbrClient , nbrShop, nbrService });
+        const [nbrClient, nbrShop, nbrService, topSellingProducts] = await Promise.all([
+            Client.countDocuments(),
+            Shop.countDocuments(),
+            Service.countDocuments(),
+            Order.aggregate([
+                { $unwind: "$items" },
+                {
+                    $group: {
+                        _id: {
+                            service: "$items.service",
+                            shop: "$shop"
+                        },
+                        product: { $first: "$items.serviceName" },
+                        price: { $avg: "$items.unitPrice" },
+                        quantitySold: { $sum: "$items.quantity" },
+                        clients: { $addToSet: "$client" }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "shops",
+                        localField: "_id.shop",
+                        foreignField: "_id",
+                        as: "shop"
+                    }
+                },
+                { $unwind: { path: "$shop", preserveNullAndEmptyArrays: true } },
+                {
+                    $project: {
+                        _id: 0,
+                        product: 1,
+                        price: { $round: ["$price", 2] },
+                        quantitySold: 1,
+                        shop: { $ifNull: ["$shop.name", "Boutique inconnue"] },
+                        clientCount: { $size: "$clients" }
+                    }
+                },
+                { $sort: { quantitySold: -1 } },
+                { $limit: 10 }
+            ])
+        ]);
+
+        res.status(200).json({ nbrClient , nbrShop, nbrService, topSellingProducts });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
