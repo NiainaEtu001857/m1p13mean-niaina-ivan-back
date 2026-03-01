@@ -4,9 +4,28 @@ const Service = require("../models/Service");
 const Order = require("../models/Order");
 const mongoose = require("mongoose");
 
+const MONTH_LABELS = ["Jan", "Fev", "Mar", "Avr", "Mai", "Jun", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec"];
+
+function buildMonthlySeries(rows) {
+    const series = Array(12).fill(0);
+    for (const row of rows) {
+        if (!row?._id) continue;
+        const monthIndex = Number(row._id) - 1;
+        if (monthIndex >= 0 && monthIndex < 12) {
+            series[monthIndex] = Number(row.value || 0);
+        }
+    }
+    return series;
+}
+
 exports.getStats = async (req, res) =>{
     try{
-        const [nbrClient, nbrShop, nbrService, topSellingProducts] = await Promise.all([
+        const now = new Date();
+        const currentYear = now.getUTCFullYear();
+        const startOfYear = new Date(Date.UTC(currentYear, 0, 1));
+        const startOfNextYear = new Date(Date.UTC(currentYear + 1, 0, 1));
+
+        const [nbrClient, nbrShop, nbrService, topSellingProducts, monthlyRevenueRows, monthlyNewClientsRows] = await Promise.all([
             Client.countDocuments(),
             Shop.countDocuments(),
             Service.countDocuments(),
@@ -45,10 +64,58 @@ exports.getStats = async (req, res) =>{
                 },
                 { $sort: { quantitySold: -1 } },
                 { $limit: 10 }
+            ]),
+            Order.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: startOfYear, $lt: startOfNextYear }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $month: "$createdAt" },
+                        value: { $sum: "$totalAmount" }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        value: { $round: ["$value", 2] }
+                    }
+                }
+            ]),
+            Client.aggregate([
+                {
+                    $addFields: {
+                        createdAtFromId: { $toDate: "$_id" }
+                    }
+                },
+                {
+                    $match: {
+                        createdAtFromId: { $gte: startOfYear, $lt: startOfNextYear }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $month: "$createdAtFromId" },
+                        value: { $sum: 1 }
+                    }
+                }
             ])
         ]);
 
-        res.status(200).json({ nbrClient , nbrShop, nbrService, topSellingProducts });
+        const monthlyRevenue = buildMonthlySeries(monthlyRevenueRows);
+        const monthlyNewClients = buildMonthlySeries(monthlyNewClientsRows);
+
+        res.status(200).json({
+            nbrClient,
+            nbrShop,
+            nbrService,
+            topSellingProducts,
+            chartLabels: MONTH_LABELS,
+            monthlyRevenue,
+            monthlyNewClients
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
