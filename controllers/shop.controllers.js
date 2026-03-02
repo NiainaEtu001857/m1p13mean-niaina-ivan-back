@@ -98,14 +98,11 @@ exports.register = async (req, res) => {
     try{
         const { name, type, description, email, password } = req.body;
         console.log("Received shop registration data:", { name, type, description, email, password });
-        
-        let photo = null;
-        if (req.file) {
-            const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
-            photo = `${baseUrl}/public/img/shop/${req.file.filename}`;
-        }
+        const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+        const photo = req.file ? `${baseUrl}/public/img/shop/${req.file.filename}` : null;
 
-        photo = photo.toString();
+        if (!photo)
+            return res.status(400).json({ message: "Photo is required" });
 
         console.log("Received shop registration data:", { name, type, description, email, password, photo });
 
