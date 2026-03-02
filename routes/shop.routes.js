@@ -12,6 +12,7 @@ router.post('/create' ,upload.single('photo') , shopController.register );
 // router.post('/create',validate.register ,upload.single('photo') , shopController.register );
 
 router.get('/shops',authMiddleware ,shopController.getShops);
+router.get('/:id' , shopController.getShopById);
 
 
 
