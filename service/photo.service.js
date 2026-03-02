@@ -2,8 +2,9 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 
-const shopUploadDir = path.join(__dirname, '..', 'assets', 'img', 'shop');
-const serviceUploadDir = path.join(__dirname, '..', 'assets', 'img', 'services');
+const uploadRoot = process.env.UPLOAD_ROOT || path.join(__dirname, '..', 'assets');
+const shopUploadDir = path.join(uploadRoot, 'img', 'shop');
+const serviceUploadDir = path.join(uploadRoot, 'img', 'services');
 
 function ensureUploadDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });

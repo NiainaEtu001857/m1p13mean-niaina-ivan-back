@@ -34,6 +34,7 @@ const orderRoutes = require('./routes/order.routes')
 
 
 const favicon = require('serve-favicon')
+const uploadRoot = process.env.UPLOAD_ROOT || path.join(__dirname, 'assets');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -44,7 +45,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
-app.use('/public', express.static(path.join(__dirname, 'assets')));
+app.use('/public', express.static(uploadRoot));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

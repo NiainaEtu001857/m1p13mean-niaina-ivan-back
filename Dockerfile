@@ -8,10 +8,10 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY . . 
 
-RUN mkdir -p /app/assets/img/services /app/assets/img/shop \
- && chown -R node:node /app/assets
+RUN mkdir -p /data/img/services /data/img/shop \
+ && chown -R node:node /data
 
-VOLUME ["/app/assets"]
+VOLUME ["/data"]
 
 USER node
 
