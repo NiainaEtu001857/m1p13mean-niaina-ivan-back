@@ -38,13 +38,16 @@ const orderSchema = new mongoose.Schema({
         ref: 'Client',
         required: true
     },
-    shop: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Shop',
-        required: true
-
-    },
-    items: [orderDetailSchema],
+    shops: [
+        {
+        shop: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Shop',
+            required: true
+        },
+        items: [orderDetailSchema]
+        }
+    ],
 
     totalAmount:{
         type: Number,
