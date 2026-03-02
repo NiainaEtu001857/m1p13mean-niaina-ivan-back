@@ -7,12 +7,18 @@ const shopUploadDir = path.join(uploadRoot, 'img', 'shop');
 const serviceUploadDir = path.join(uploadRoot, 'img', 'services');
 
 function ensureUploadDir(dirPath) {
-  fs.mkdirSync(dirPath, { recursive: true });
+  try {
+    fs.mkdirSync(dirPath, { recursive: true });
+    return null;
+  } catch (err) {
+    return err;
+  }
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    ensureUploadDir(shopUploadDir);
+    const dirError = ensureUploadDir(shopUploadDir);
+    if (dirError) return cb(dirError);
     cb(null, shopUploadDir);
   },
   filename: (req, file, cb) => cb(null, `${Date.now()}-${path.basename(file.originalname)}`)
@@ -20,7 +26,8 @@ const storage = multer.diskStorage({
 
 const storageService = multer.diskStorage({
   destination: (req, file, cb) => {
-    ensureUploadDir(serviceUploadDir);
+    const dirError = ensureUploadDir(serviceUploadDir);
+    if (dirError) return cb(dirError);
     cb(null, serviceUploadDir);
   },
   filename: (req, file, cb) => cb(null, `${Date.now()}-${path.basename(file.originalname)}`)

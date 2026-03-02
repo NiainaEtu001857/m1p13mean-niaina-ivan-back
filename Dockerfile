@@ -8,11 +8,6 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 COPY . . 
 
-RUN mkdir -p /data/img/services /data/img/shop \
- && chown -R node:node /data
-
-VOLUME ["/data"]
-
-USER node
+RUN mkdir -p /data/img/services /data/img/shop
 
 CMD ["node", "./bin/www"]
