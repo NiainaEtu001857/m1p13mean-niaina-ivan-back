@@ -1,20 +1,41 @@
-const createError = require('http-errors');
-require("dotenv").config();
-require("./config/db")();
+
+
 const express = require('express');
+const app = express();
+const cors = require('cors');
+
+require("dotenv").config({ quiet: true });
+require("./config/db")();
+
+
+const corsOptions = {
+  origin: process.env.ORIGIN,
+  methods: ['GET', 'POST', 'PUT',  'DELETE'],
+  credentials: true
+
+}
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+
+
+const createError = require('http-errors');
+
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth.routes');
+const AdminRouter = require('./routes/admin.routes');
 const shopRouter = require('./routes/shop.routes')
+const clientRouter = require('./routes/client.routes')
+const orderRoutes = require('./routes/order.routes')
 
-const app = express();
+
 const favicon = require('serve-favicon')
+const uploadRoot = process.env.UPLOAD_ROOT || path.join(__dirname, 'assets');
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -24,26 +45,27 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+app.use('/public', express.static(uploadRoot));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/admin', AdminRouter);
 app.use('/shop', shopRouter);
+app.use('/client', clientRouter);
+app.use('/orders', orderRoutes);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({
+    message: err.message || "Server error"
+
+  });
 });
 
 module.exports = app;

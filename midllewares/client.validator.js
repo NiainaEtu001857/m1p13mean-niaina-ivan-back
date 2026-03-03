@@ -1,7 +1,7 @@
-module.exports = ( req, res, next) => {
-    const { email, password } = req.body;
+module.exports.register = ( req, res, next) => {
+    const { first_name, last_name,  email, password } = req.body;
 
-    if (!email || !password)
+    if (!first_name || !last_name ||!email || !password)
         return res.status(400).json({ message: "Missing fields"});
 
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -9,5 +9,4 @@ module.exports = ( req, res, next) => {
         return res.status(400).json({ message: "Invalid email format"});
 
     next();
-
 };

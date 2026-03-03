@@ -1,10 +1,13 @@
-const User = require ("../models/User");
+const Admin = require ("../models/Admin");
+const Shop = require ("../models/Shop");
+const Client = require ("../models/Client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-exports.register = async (req, res) => {
-    const { email, password, role } = req.body;
 
+exports.register = async (req, res) => {
+try {
+   const { email, password, role } = req.body;
     const exists = await User.findOne({ email });
     if (exists)
         return res.status(400).json({ message: "Email already exists"});
@@ -31,15 +34,21 @@ exports.register = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
     );
-    res.status(201).json({ token });
+    res.status(201).json({ token }); 
+} catch (error) {
+   return res.status(500).json({ message: "Server error"}); 
+}
+
 };
 
 
-exports.login = async (req, res) =>
+const login = (Model) => async (req, res) =>
 {
+    try {
+
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await Model.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email doesn't exist" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -51,5 +60,29 @@ exports.login = async (req, res) =>
         process.env.JWT_SECRET,
         { expiresIn: "1d"}
     );
-    res.json({ token });
+    res.json({ token, user:{
+        id: user._id,
+        email: user.email,
+        role: user.role,
+    } });
+    } catch (err)
+    {
+        console.error(err);
+        return res.status(500).json({ message: "Server error"});
+
+    }
 }
+
+exports.logout = (req, res) =>
+{
+    try {
+        res.clearCookie("token");
+        res.json({ message: "Logged out successfully" });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error" });
+    }   
+}
+
+exports.AdminLogin = login(Admin);
+exports.shopLogin = login(Shop);
+exports.clientLogin = login(Client);

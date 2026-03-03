@@ -1,18 +1,13 @@
 const moogose = require('mongoose')
 
-const shopShema = new moogose.Schema(
+const client = new moogose.Schema(
     {
-        name:
+        first_name:
         {
             type: String,
             required: true
         },
-        type:
-        {
-            type: String,
-            required: true
-        },
-        description:
+        last_name:
         {
             type: String,
             required: true
@@ -27,11 +22,6 @@ const shopShema = new moogose.Schema(
                 'Format invalid of the email address'
             ]
         },
-        photo:
-        {
-            type: String,
-            required: true
-        },
         password:
         {
             type: String,
@@ -39,10 +29,10 @@ const shopShema = new moogose.Schema(
         },
         role: {
                 type: String,
-                default: "SHOP"
+                default: "CLIENT"
             }
 
     }
 );
 
-module.exports = moogose.model('Shop', shopShema); 
+module.exports = moogose.model('Client', client); 
