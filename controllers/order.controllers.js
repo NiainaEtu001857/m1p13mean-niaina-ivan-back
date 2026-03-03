@@ -170,15 +170,34 @@ exports.getClientOrders = async (req, res) =>
 exports.getShopOrders = async (req, res) =>
 {
     try {
+        const shopId = req.params.shopId;
         const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
         const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
         const skip = (page - 1) * limit;
-        const query = { shops: { $elemMatch: { shop: req.params.shopId } } };
+        const query = { shops: { $elemMatch: { shop: shopId } } };
         const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
+
+        const formatOrdersForShop = (orders) =>
+            orders.map((order) => {
+                const selectedShop = (order.shops || []).find(
+                    (shopEntry) => String(shopEntry.shop) === String(shopId)
+                );
+
+                return {
+                    _id: order._id,
+                    ref: order.ref,
+                    client: order.client,
+                    createdAt: order.createdAt,
+                    status: order.status,
+                    totalAmount: order.totalAmount,
+                    items: selectedShop?.items || [],
+                    shop: selectedShop?.shop || shopId
+                };
+            });
 
         if (!hasPaginationQuery) {
             const orders = await Order.find(query).sort({ createdAt: -1});
-            return res.json(orders);
+            return res.json(formatOrdersForShop(orders));
         }
 
         const [orders, totalItems] = await Promise.all([
@@ -187,7 +206,7 @@ exports.getShopOrders = async (req, res) =>
         ]);
 
         return res.json({
-            data: orders,
+            data: formatOrdersForShop(orders),
             page,
             limit,
             totalItems,
