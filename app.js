@@ -10,7 +10,7 @@ require("./config/db")();
 
 const corsOptions = {
   origin: process.env.ORIGIN,
-  methods: ['GET', 'POST', 'PUT',  'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 
 }

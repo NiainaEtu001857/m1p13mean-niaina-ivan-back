@@ -235,6 +235,116 @@ exports.updateOrderStatus = async (req, res)=>
     }
 }
 
+exports.updateShopOrder = async (req, res) => {
+    try {
+        const { orderId, shopId } = req.params;
+        const { status, items } = req.body || {};
+        const allowedStatuses = ['pending', 'confirmed', 'cancelled', 'delivered'];
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        const shopEntry = (order.shops || []).find(
+            (entry) => String(entry.shop) === String(shopId)
+        );
+
+        if (!shopEntry) {
+            return res.status(404).json({ message: 'Shop not found in this order' });
+        }
+
+        if (status !== undefined) {
+            if (!allowedStatuses.includes(status)) {
+                return res.status(400).json({ message: 'Invalid status value' });
+            }
+            order.status = status;
+        }
+
+        if (Array.isArray(items)) {
+            const extractServiceId = (value) => {
+                if (!value) return '';
+                if (typeof value === 'string') return value;
+                if (typeof value === 'object' && value._id) return String(value._id);
+                return '';
+            };
+
+            const normalizedItems = items.map((item, index) => ({
+                index,
+                serviceId: extractServiceId(item?.service) || extractServiceId(item?.serviceId),
+                quantity: Number(item?.quantity)
+            }));
+
+            for (const item of normalizedItems) {
+                if (!Number.isFinite(item.quantity) || item.quantity < 0) {
+                    return res.status(400).json({ message: 'Quantity must be a number >= 0' });
+                }
+                item.quantity = Math.trunc(item.quantity);
+            }
+
+            const updatedItems = [];
+            for (let i = 0; i < (shopEntry.items || []).length; i += 1) {
+                const currentItem = shopEntry.items[i];
+                const serviceId = String(currentItem.service);
+
+                const payloadItemByService = normalizedItems.find(
+                    (item) => item.serviceId && item.serviceId === serviceId
+                );
+                const payloadItemByIndex = normalizedItems[i];
+                const payloadItem = payloadItemByService || payloadItemByIndex;
+
+                if (!payloadItem) {
+                    updatedItems.push(currentItem);
+                    continue;
+                }
+
+                if (payloadItem.quantity <= 0) {
+                    continue;
+                }
+
+                currentItem.quantity = payloadItem.quantity;
+                currentItem.totalPrice = payloadItem.quantity * Number(currentItem.unitPrice || 0);
+                updatedItems.push(currentItem);
+            }
+
+            if (updatedItems.length === 0) {
+                return res.status(400).json({ message: 'Order must contain at least one item' });
+            }
+
+            shopEntry.items = updatedItems;
+        }
+
+        const totalAmount = (order.shops || []).reduce((shopSum, shop) => {
+            const shopTotal = (shop.items || []).reduce(
+                (itemSum, item) => itemSum + Number(item.totalPrice || 0),
+                0
+            );
+            return shopSum + shopTotal;
+        }, 0);
+
+        order.totalAmount = totalAmount;
+        order.markModified('shops');
+        await order.save();
+
+        const selectedShop = (order.shops || []).find(
+            (shop) => String(shop.shop) === String(shopId)
+        );
+
+        return res.status(200).json({
+            _id: order._id,
+            ref: order.ref,
+            client: order.client,
+            createdAt: order.createdAt,
+            status: order.status,
+            totalAmount: order.totalAmount,
+            items: selectedShop?.items || [],
+            shop: selectedShop?.shop || shopId
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 exports.verifyStockAndServiceAvailability = async (req, res) => {
     try {
         const { item } = req.body;

@@ -10,6 +10,7 @@ router.get('/client/:clientId', orderController.getClientOrders)
 router.get('/shop/:shopId', orderController.getShopOrders)
 
 router.patch('/:orderId/status', orderController.updateOrderStatus)
+router.patch('/:orderId/shop/:shopId', orderController.updateShopOrder)
 
 router.post('/confirm',authMiddleware, orderController.saveOrder)
 router.post('/verify-stock', orderController.verifyStockAndServiceAvailability)
