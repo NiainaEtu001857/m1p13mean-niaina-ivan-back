@@ -9,11 +9,11 @@ const { upload } = require('../service/photo.service');
 
 router.post('/login', shopLogin);
 router.post('/create', upload.single('photo'), validate.register, shopController.register);
+router.get('/dashboard', authMiddleware, requireRole("SHOP"), shopController.getDashboard);
 
 router.get('/shops',authMiddleware ,shopController.getShops);
 router.get('/:id' , shopController.getShopById);
 
-router.get('/dashboard', authMiddleware, requireRole("SHOP"), shopController.getDashboard);
 
 
 router.use('/service', authMiddleware, requireRole("SHOP"),service);

@@ -1,4 +1,7 @@
 const Shop = require ("../models/Shop");
+const Order = require("../models/Order");
+const Service = require("../models/Service");
+const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const path = require('path');
@@ -153,13 +156,13 @@ exports.getDashboard = async (req, res) => {
         if (!shop) return res.status(404).json({ message: "Shop not found" }); 
         const totalOrders = await Order.countDocuments({ shop: shopId , status: 'pending' }); 
         const totalRevenue = await Order.aggregate([
-            { $match: { shop: mongoose.Types.ObjectId(shopId), status: 'pending' } },
+            { $match: { shop: new mongoose.Types.ObjectId(shopId), status: 'pending' } },
             { $group: { _id: null, total: { $sum: '$totalAmount' } } }
         ]);
         const totalServices = await Service.countDocuments({ shop: shopId });
-        const totalClients = await Order.distinct('client', { shop: shopId , status: 'pending' }).count();
+        const totalClients = await Order.distinct('client', { shop: shopId , status: 'pending' }).length;
         const statisticsRevenue = await Order.aggregate([
-            { $match: { shop: mongoose.Types.ObjectId(shopId), status: 'pending' } },
+            { $match: { shop: new mongoose.Types.ObjectId(shopId), status: 'pending' } },
             { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, total: { $sum: '$totalAmount' } } },
             { $sort: { _id: 1 } }
         ]);
@@ -181,6 +184,6 @@ exports.getDashboard = async (req, res) => {
     }catch (err)
     {
         console.log(err);
-        res.status(501).json({ message: "Server error" });
+        res.status(500).json({ message: "Server error" });
     }   
 }
