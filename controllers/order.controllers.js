@@ -94,10 +94,15 @@ exports.createOrder = async (req, res)=>
             totalAmount += totalPrice
         }
 
+
         const order = await Order.create({
             client: clientId,
-            shop: shopId,
-            items: orderDetail,
+            shops: [
+                {
+                    shop: shopId,
+                    items: orderDetail
+                }
+            ],
             totalAmount
         })
 
@@ -168,7 +173,7 @@ exports.getShopOrders = async (req, res) =>
         const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
         const limit = Math.max(parseInt(req.query.limit, 10) || 10, 1);
         const skip = (page - 1) * limit;
-        const query = { shop: req.params.shopId };
+        const query = { shops: { $elemMatch: { shop: req.params.shopId } } };
         const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
 
         if (!hasPaginationQuery) {
