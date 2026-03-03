@@ -143,3 +143,44 @@ exports.register = async (req, res) => {
         return res.status(500).json({ message: "Server error" , error: err.message });
     }
 };
+
+
+exports.getDashboard = async (req, res) => {
+    try{
+        const shopId = req.userId;
+        console.log("Fetching dashboard for shopId:", shopId);
+        const shop = await Shop.findById(shopId).select('-password');
+        if (!shop) return res.status(404).json({ message: "Shop not found" }); 
+        const totalOrders = await Order.countDocuments({ shop: shopId , status: 'pending' }); 
+        const totalRevenue = await Order.aggregate([
+            { $match: { shop: mongoose.Types.ObjectId(shopId), status: 'pending' } },
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        ]);
+        const totalServices = await Service.countDocuments({ shop: shopId });
+        const totalClients = await Order.distinct('client', { shop: shopId , status: 'pending' }).count();
+        const statisticsRevenue = await Order.aggregate([
+            { $match: { shop: mongoose.Types.ObjectId(shopId), status: 'pending' } },
+            { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, total: { $sum: '$totalAmount' } } },
+            { $sort: { _id: 1 } }
+        ]);
+        const listOrdersRecent = await Order.find({ shop: shopId , status: 'pending' })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate('client', 'name email')
+            .select('client totalAmount status createdAt'); 
+        res.status(200).json({
+            message: "Dashboard data fetched successfully",
+            shop,
+            totalOrders,
+            totalRevenue: totalRevenue[0] ? totalRevenue[0].total : 0,
+            totalServices,
+            totalClients,
+            statisticsRevenue,
+            listOrdersRecent
+        });
+    }catch (err)
+    {
+        console.log(err);
+        res.status(501).json({ message: "Server error" });
+    }   
+}

@@ -1,5 +1,6 @@
 const Order = require('../models/Order')
 const Service = require('../models/Service')
+const Stock = require('../models/Stock')
 const mongoose = require('mongoose');
 
 exports.get = async (req, res) => {
@@ -15,7 +16,7 @@ exports.get = async (req, res) => {
     if (!clientId || !mongoose.Types.ObjectId.isValid(clientId)) {
       return res.status(400).json({ error: "ClientId invalide" });
     }
-
+    
     const query = { client: clientId , ...statusFilter};
     const hasPaginationQuery = req.query.page !== undefined || req.query.limit !== undefined;
 
@@ -208,4 +209,26 @@ exports.updateOrderStatus = async (req, res)=>
     {
         res.status(500).json({error: error.message})
     }
+}
+
+exports.verifyStockAndServiceAvailability = async (req, res) => {
+    try {
+        const { item } = req.body;
+        if (!item || !item.service) {
+            return res.status(400).json({ error: "ServiceId is required" });
+        }
+        const stock = await Stock.findOne({ service: item.service });
+        if (!stock) {
+            return res.status(404).json({ error: "Stock information not found for the service" });
+        }
+        if (stock.quantity <= 0) {
+            return res.status(400).json({ error: "Service is out of stock" });
+        }
+        if (item.quantity > stock.quantity) {
+            return res.status(400).json({ error: "Not enough stock available for the requested quantity" });
+        }
+        res.json({ available: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }       
 }
